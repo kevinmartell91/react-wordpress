@@ -1,23 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { lazy, Suspense, useState } from "react";
+import VisibilitySensor from "react-visibility-sensor";
+import "./App.css";
 
+const LazyComponent = lazy(() => import("./components/lazyComponent"));
+const loading_component_message = <div>Loading component</div>;
+const loadComponent = (
+  <Suspense fallback={loading_component_message}>{<LazyComponent />}</Suspense>
+);
 function App() {
+  const [isLazyLoaded, setIsLazyLoaded] = useState(false);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <h1>React application. </h1>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          <code>
+            When the logo-component area is visible, the component is lazy
+            loaded.
+          </code>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h2>Instructions:</h2>
+        <code>
+          <br></br>
+          <strong>1)</strong>Open Chrome DevTools
+          <br></br>
+          <br></br>
+          <strong>2)</strong>Go to Network tab and change the Network throttling
+          to Slow 3G.
+          <br></br>(this will allow you to the see the loading message)
+          <br></br>
+          <br></br>
+          <strong>3)</strong>Scroll down until the logo-component is loaded.
+        </code>
+
+        <br></br>
+        <br></br>
       </header>
+      <body>
+        <VisibilitySensor>
+          {({ isVisible }) => {
+            if (isVisible) setIsLazyLoaded(true);
+            return (
+              <div>
+                <h3>
+                  {isVisible
+                    ? "Lazy loading area - Visible"
+                    : "Lazy loading area - No Visible"}
+                </h3>
+              </div>
+            );
+          }}
+        </VisibilitySensor>
+        <div>{isLazyLoaded && loadComponent}</div>
+      </body>
     </div>
   );
 }
